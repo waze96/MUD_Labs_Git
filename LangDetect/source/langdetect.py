@@ -9,6 +9,7 @@ from preprocess import  preprocess
 seed = 42
 random.seed(seed)
 
+# py ./LangDetect/source/langdetect.py --input C:\Users\jordi\Documents\GitHub\MUD_Labs_Git\LangDetect\data\dataset.csv --voc_size 2000 --analyzer 'char'
 
 def get_parser():
     parser = argparse.ArgumentParser()
@@ -20,7 +21,6 @@ def get_parser():
                          help="Tokenization level: {word, char}", 
                         type=str, choices=['word','char'])
     return parser
-
 
 if __name__ == "__main__":
     parser = get_parser()
