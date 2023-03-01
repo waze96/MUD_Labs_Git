@@ -1,7 +1,5 @@
 import nltk
 
-
-
 #Tokenizer function. You can add here different preprocesses.
 def preprocess(sentence, labels):
     '''
@@ -15,6 +13,16 @@ def preprocess(sentence, labels):
     # Place your code here
     # Keep in mind that sentence splitting affectes the number of sentences
     # and therefore, you should replicate labels to match.
+    print(type(sentence))
+    print(type(labels))
+    print("AA")
+    # Remove strange tokens
+    tokensToRemove = ["[","]","《","》"]
+    for t in tokensToRemove:
+        sentence = sentence.replace(t, "")
+
+    # Split sentence in more subsentences
+    parts = sentence.split("，")
     return sentence,labels
 
 
