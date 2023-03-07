@@ -9,24 +9,15 @@ from preprocess import  preprocess
 seed = 42
 random.seed(seed)
 
-# py ./LangDetect/source/langdetect.py --input C:\Users\jordi\Documents\GitHub\MUD_Labs_Git\LangDetect\data\dataset.csv --voc_size 2000 --analyzer 'char'
+# py ./source/langdetect.py -i C:\Users\jordi\Documents\GitHub\MUD_Labs_Git\LangDetect\data\dataset.csv --voc_size 1000 --analyzer 'char'
 
-def get_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", 
-                        help="Input data in csv format", type=str)
-    parser.add_argument("-v", "--voc_size", 
-                        help="Vocabulary size", type=int)
-    parser.add_argument("-a", "--analyzer",
-                         help="Tokenization level: {word, char}", 
-                        type=str, choices=['word','char'])
-    return parser
 
 if __name__ == "__main__":
-    parser = get_parser()
-    args = parser.parse_args()
-    raw = pd.read_csv(args.input)
-    
+
+    raw = pd.read_csv('.\langdetect\data\dataset.csv')
+    analyzer = 'word'
+    voc_size = 1000
+
     # Languages
     languages = set(raw['language'])
     print('========')
@@ -45,19 +36,19 @@ if __name__ == "__main__":
     print('========')
     
     # Preprocess text (Word granularity only)
-    if args.analyzer == 'word':
+    if analyzer == 'word':
         X_train, y_train = preprocess(X_train,y_train)
         X_test, y_test = preprocess(X_test,y_test)
 
     #Compute text features
     features, X_train_raw, X_test_raw = compute_features(X_train, 
                                                             X_test, 
-                                                            analyzer=args.analyzer, 
-                                                            max_features=args.voc_size)
+                                                            analyzer=analyzer, 
+                                                            max_features=voc_size)
 
     print('========')
     print('Number of tokens in the vocabulary:', len(features))
-    print('Coverage: ', compute_coverage(features, X_test.values, analyzer=args.analyzer))
+    print('Coverage: ', compute_coverage(features, X_test.values, analyzer=analyzer))
     print('========')
 
 
