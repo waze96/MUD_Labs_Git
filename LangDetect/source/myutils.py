@@ -42,8 +42,6 @@ def compute_features(X_train,
   unigramFeatures = unigramVectorizer.get_feature_names()
   return unigramFeatures, X_unigram_train_raw, X_unigram_test_raw
     
-
-
 def compute_coverage(features, split, analyzer='char'):
   '''
   Task: Compute the proportion of a corpus that is represented by

@@ -14,18 +14,12 @@ random.seed(seed)
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD
+
 
     raw = pd.read_csv('.\langdetect\data\dataset.csv')
-    analyzer = 'word'
+    analyzer = 'char'
     voc_size = 1000
 
-=======
-    parser = get_parser()
-    args = parser.parse_args()
-    raw = pd.read_csv(args.input)
-    raw = raw[(raw['language']=='Japanese') | (raw['language']=='Chinese') | (raw['language']=='Thai') | (raw['language']=='Tamil') | (raw['language']=='Russian') | (raw['language']=='Hindi') | (raw['language']=='Korean')]
->>>>>>> 2afe75801b437d794014ce7d589ff0b3c6f2087e
     # Languages
     languages = set(raw['language'])
     print('========')

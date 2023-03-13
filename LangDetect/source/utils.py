@@ -3,13 +3,11 @@ from sklearn.metrics import confusion_matrix, f1_score
 from sklearn.decomposition import PCA
 import seaborn as sn
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 from matplotlib import pyplot as plt
 from sklearn.feature_extraction.text import CountVectorizer
 import scipy
 import numpy as np
 import pandas as pd
-import random
 
 
 
@@ -114,6 +112,7 @@ def plot_F_Scores(y_test, y_predict):
     f1_macro = f1_score(y_test, y_predict, average='macro')
     f1_weighted = f1_score(y_test, y_predict, average='weighted')
     print("F1: {} (micro), {} (macro), {} (weighted)".format(f1_micro, f1_macro, f1_weighted))
+    return f1_weighted
 
 def plot_Confusion_Matrix(y_test, y_predict, color="Blues"):
     '''
@@ -138,7 +137,7 @@ def plot_Confusion_Matrix(y_test, y_predict, color="Blues"):
     plt.show()
 
 
-def plotPCA(x_train, x_test,y_test, langs, X_unigram_train_raw):
+def plotPCA(x_train, x_test,y_test, langs):
     '''
     Task: Given train features train a PCA dimensionality reduction
           (2 dimensions) and plot the test set according to its labels.
@@ -155,74 +154,14 @@ def plotPCA(x_train, x_test,y_test, langs, X_unigram_train_raw):
     pca = PCA(n_components=2)
     pca.fit(toNumpyArray(x_train))
     pca_test = pca.transform(toNumpyArray(x_test))
-    
-    n_pcs= pca.components_.shape[0]
-    print(X_unigram_train_raw)
-    #print(pca.components_)
-    # get the index of the most important feature on EACH component
-    # LIST COMPREHENSION HERE
-    most_important = [np.abs(pca.components_[i]).argmax() for i in range(n_pcs)]
-
-    most_important_names = [x_train[most_important[i]] for i in range(n_pcs)]
-    dic = {'PC{}'.format(i): most_important_names[i] for i in range(n_pcs)}
-    df = pd.DataFrame(dic.items())
-
-
     print('Variance explained by PCA:', pca.explained_variance_ratio_)
     y_test_list = np.asarray(y_test.tolist())
-    colors = plt.cm.get_cmap('hsv', len(langs)) # EDU
-    for j, lang in enumerate(langs):    # EDU
+    for lang in langs:
         pca_x = np.asarray([i[0] for i in pca_test])[y_test_list == lang]
         pca_y = np.asarray([i[1] for i in pca_test])[y_test_list == lang]
-        plt.scatter(pca_x,pca_y, label=lang, color=colors(j) )
-        plt.annotate(lang, (pca_x[0], pca_y[0]), color=colors(j))
-    plt.legend(loc="upper right")
+        plt.scatter(pca_x,pca_y, label=lang)
+    plt.legend(loc="upper left")
     plt.show()
 
-# Aggregate Unigrams per language
-def train_lang_dict(X_raw_counts, y_train):
-    lang_dict = {}
-    for i in range(len(y_train)):
-        lang = y_train[i]
-        v = np.array(X_raw_counts[i])
-        if not lang in lang_dict:
-            lang_dict[lang] = v
-        else:
-            lang_dict[lang] += v
-            
-    # to relative
-    for lang in lang_dict:
-        v = lang_dict[lang]
-        lang_dict[lang] = v / np.sum(v)
-        
-    return lang_dict
 
-# Collect relevant chars per language
-def getRelevantCharsPerLanguage(features, language_dict, languages, significance=1e-5):
-    relevantCharsPerLanguage = {}
-    for lang in languages:
-        chars = []
-        relevantCharsPerLanguage[lang] = chars
-        v = language_dict[lang]
-        for i in range(len(v)):
-            if v[i] > significance:
-                chars.append(features[i])
-    return relevantCharsPerLanguage
 
-def getRelevantGramsPerLanguage(features, language_dict, languages, top=50):
-    relevantGramsPerLanguage = {}
-    for lang in languages:
-        chars = []
-        relevantGramsPerLanguage[lang] = chars
-        v = language_dict[lang]
-        sortIndex = (-v).argsort()[:top]
-        for i in range(len(sortIndex)):
-            chars.append(features[sortIndex[i]])
-    return relevantGramsPerLanguage
-
-# getRelevantColumnIndices
-def getRelevantColumnIndices(allFeatures, selectedFeatures):
-    relevantColumns = []
-    for feature in selectedFeatures:
-        relevantColumns = np.append(relevantColumns, np.where(allFeatures==feature))
-    return relevantColumns.astype(int)
