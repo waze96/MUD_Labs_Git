@@ -11,7 +11,7 @@ random.seed(seed)
 
 if __name__ == "__main__":
     raw = pd.read_csv('.\langdetect\data\dataset.csv')
-    analyzer = 'char'
+    analyzer = 'word'
     voc_size = 1000
 
     

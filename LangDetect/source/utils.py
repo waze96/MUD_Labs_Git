@@ -137,7 +137,35 @@ def plot_Confusion_Matrix(y_test, y_predict, color="Blues"):
     plt.show()
 
 
-def plotPCA(x_train, x_test,y_test, langs):
+# def plotPCA(x_train, x_test,y_test, langs):
+#     '''
+#     Task: Given train features train a PCA dimensionality reduction
+#           (2 dimensions) and plot the test set according to its labels.
+    
+#     Input: x_train -> Train features
+#            x_test -> Test features
+#            y_test -> Test labels
+#            langs -> Set of language labels
+
+#     Output: Print the amount of variance explained by the 2 first principal components.
+#             Plot PCA results by language
+            
+#     '''   
+#     pca = PCA(n_components=2)
+#     pca.fit(toNumpyArray(x_train))
+#     pca_test = pca.transform(toNumpyArray(x_test))
+#     print('Variance explained by PCA:', pca.explained_variance_ratio_)
+#     y_test_list = np.asarray(y_test.tolist())
+#     for lang in langs:
+#         pca_x = np.asarray([i[0] for i in pca_test])[y_test_list == lang]
+#         pca_y = np.asarray([i[1] for i in pca_test])[y_test_list == lang]
+#         plt.scatter(pca_x,pca_y, label=lang)
+#     plt.legend(loc="upper left")
+#     plt.show()
+
+
+
+def plotPCA(x_train, x_test,y_test, langs, X_unigram_train_raw):
     '''
     Task: Given train features train a PCA dimensionality reduction
           (2 dimensions) and plot the test set according to its labels.
@@ -154,14 +182,26 @@ def plotPCA(x_train, x_test,y_test, langs):
     pca = PCA(n_components=2)
     pca.fit(toNumpyArray(x_train))
     pca_test = pca.transform(toNumpyArray(x_test))
+    
+    n_pcs= pca.components_.shape[0]
+    print(X_unigram_train_raw)
+    #print(pca.components_)
+    # get the index of the most important feature on EACH component
+    # LIST COMPREHENSION HERE
+    most_important = [np.abs(pca.components_[i]).argmax() for i in range(n_pcs)]
+
+    most_important_names = [x_train[most_important[i]] for i in range(n_pcs)]
+    dic = {'PC{}'.format(i): most_important_names[i] for i in range(n_pcs)}
+    df = pd.DataFrame(dic.items())
+
+
     print('Variance explained by PCA:', pca.explained_variance_ratio_)
     y_test_list = np.asarray(y_test.tolist())
-    for lang in langs:
+    colors = plt.cm.get_cmap('hsv', len(langs)) # EDU
+    for j, lang in enumerate(langs):    # EDU
         pca_x = np.asarray([i[0] for i in pca_test])[y_test_list == lang]
         pca_y = np.asarray([i[1] for i in pca_test])[y_test_list == lang]
-        plt.scatter(pca_x,pca_y, label=lang)
-    plt.legend(loc="upper left")
+        plt.scatter(pca_x,pca_y, label=lang, color=colors(j) )
+        plt.annotate(lang, (pca_x[0], pca_y[0]), color=colors(j))
+    plt.legend(loc="upper right")
     plt.show()
-
-
-
